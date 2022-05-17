@@ -14,7 +14,7 @@ const isValidRequestBody = function(requestBody) {
 };
 
 const isValidURL = function(link) {
-    return (/^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/.test(link));
+    return (/^(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)?$/.test(link));
 }
 
 const isValidMobileNo = function(mobile) {
