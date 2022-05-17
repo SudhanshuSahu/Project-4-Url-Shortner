@@ -1,4 +1,3 @@
-const validUrl = require('valid-url');
 const shortid = require('shortid');
 const validators = require('../validators/validator');
 const urlModel = require('../models/urlModel');
@@ -23,7 +22,7 @@ const createShortUrl = async function(req, res) {
 
         const urlCode = shortid.generate().toLowerCase()
 
-        //let checkUrl = await urlModel.findOne({ longUrl: data.longUrl })
+        // let checkUrl = await urlModel.findOne({ longUrl: data.longUrl })
 
         // if (checkUrl) {
         //     return res.status(400).send({ status: false, message: "This URL has already been used, try another one" })
@@ -40,5 +39,7 @@ const createShortUrl = async function(req, res) {
         res.status(500).send({ status: false, message: err.message });
     }
 }
+
+
 
 module.exports.createShortUrl = createShortUrl
