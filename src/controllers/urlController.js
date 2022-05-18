@@ -1,8 +1,10 @@
 const shortid = require('shortid');
+const validUrl = require('valid-url')
 const validators = require('../validators/validator');
 const urlModel = require('../models/urlModel');
 const redis = require("redis");
 const { promisify } = require("util");
+const { findOne } = require('../models/urlModel');
 
 //Connect to redis
 const redisClient = redis.createClient(
@@ -41,7 +43,16 @@ const createShortUrl = async function(req, res) {
         if (!validators.isValidURL(data.longUrl)) {
             return res.status(400).send({ status: false, message: "Proivde Valid Url" });
         }
+        //
+        let isDataPresent = await GET_ASYNC(`${data.longUrl}`)
+        
+            let response = JSON.parse(isDataPresent)
+            if(response){
+            console.log("data is from cache")
+            return res.status(200).send({status: true, data: response})
+        }
 
+      else{
         const urlCode = shortid.generate().toLowerCase()
 
         // let checkUrl = await urlModel.findOne({ longUrl: data.longUrl })
@@ -55,8 +66,12 @@ const createShortUrl = async function(req, res) {
         data.urlCode = urlCode
         data.shortUrl = shortUrl
 
-        let newUrl = await urlModel.create(data)
-        return res.status(201).send({ status: true, data: newUrl })
+        await urlModel.create(data)
+        let findUrl = await urlModel.findOne({longUrl:data.longUrl}).select({_id:0 , createdAt:0 ,updatedAt:0 , __v:0})
+        await SET_ASYNC(`${data.longUrl}`, JSON.stringify(findUrl)) 
+        console.log("Data is stored in cache from db")
+        return res.status(201).send({ status: true, data: findUrl })
+    }
     } catch (err) {
         res.status(500).send({ status: false, message: err.message });
     }
@@ -67,9 +82,11 @@ const createShortUrl = async function(req, res) {
 
 const redirectUrl = async function(req,res){
     let urlCode = req.params.urlCode
-  if(!validators.isValidField(urlCode.trim().toLowerCase())){
-        return res.status(400).send({status: false, msg: "urlCode Must bhi Provided In params"})
-    }
+    
+//   if(urlCode.trimLeft()==null){
+//          return res.status(400).send({status: false, msg: "Url Code not Valid"})
+//    }
+
     const url = await urlModel.findOne({urlCode: urlCode})
     if (url) {
        
