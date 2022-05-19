@@ -49,7 +49,7 @@ const createShortUrl = async function (req, res) {
         let response = JSON.parse(isDataPresent)
         if (response) {
             console.log("data is from cache")
-            return res.status(200).send({ status: true, data: response })
+            return res.status(200).send({ status: true, message:"you have already created Short Url For this long url",data: response })
         }
 
         else {
@@ -84,6 +84,10 @@ const redirectUrl = async function (req, res) {
  
     try {
         let urlCode = req.params.urlCode
+
+        if(!shortid.isValid(urlCode)){
+            return res.status(400).send({status:false , msg : " Invalid Url"})
+        }
 
         let cachedurlCodedata = await GET_ASYNC(`${urlCode}`)
 
