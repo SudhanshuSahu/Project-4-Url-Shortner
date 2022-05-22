@@ -26,7 +26,3 @@ const urlSchema = new mongoose.Schema({
 
 module.exports = mongoose.model('url', urlSchema)
 
-// { urlCode: { mandatory, unique, lowercase, trim}, 
-// longUrl: { mandatory, valid url }, 
-// shortUrl: { mandatory, unique }
-// }

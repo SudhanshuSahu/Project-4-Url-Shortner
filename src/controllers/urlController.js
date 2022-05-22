@@ -1,5 +1,4 @@
 const shortid = require('shortid');
-const validUrl = require('valid-url')
 const validators = require('../validators/validator');
 const urlModel = require('../models/urlModel');
 const redis = require("redis");
@@ -43,24 +42,17 @@ const createShortUrl = async function (req, res) {
         if (!validators.isValidURL(data.longUrl)) {
             return res.status(400).send({ status: false, message: "Proivde Valid Url" });
         }
-        //
+        
         let isDataPresent = await GET_ASYNC(`${data.longUrl}`)
-
         let response = JSON.parse(isDataPresent)
         if (response) {
             console.log("data is from cache")
-            return res.status(200).send({ status: true, message:"you have already created Short Url For this long url",data: response })
+            return res.status(200).send({ status: true, message: "you have already created Short Url For this long url", data: response })
         }
 
         else {
             const urlCode = shortid.generate().toLowerCase()
 
-            // let checkUrl = await urlModel.findOne({ longUrl: data.longUrl })
-
-            // if (checkUrl) {
-            //     return res.status(400).send({ status: false, message: "This URL has already been used, try another one" })
-
-            // }
             let shortUrl = `http://localhost:3000/${urlCode}`
 
             data.urlCode = urlCode
@@ -81,12 +73,12 @@ const createShortUrl = async function (req, res) {
 //******************************************Get API**************************************************//
 
 const redirectUrl = async function (req, res) {
- 
+
     try {
         let urlCode = req.params.urlCode
 
-        if(!shortid.isValid(urlCode)){
-            return res.status(400).send({status:false , msg : " Invalid Url"})
+        if (!shortid.isValid(urlCode)) {
+            return res.status(400).send({ status: false, msg: " Invalid Url" })
         }
 
         let cachedurlCodedata = await GET_ASYNC(`${urlCode}`)
@@ -95,7 +87,7 @@ const redirectUrl = async function (req, res) {
 
         if (response1) {
             console.log("Data is from Cache")
-            return res.status(302).redirect(response1.longUrl )
+            return res.status(302).redirect(response1.longUrl)
         }
         else {
 
